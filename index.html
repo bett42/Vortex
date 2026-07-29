@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vortex - Interactive guide to master the Linux terminal: essential commands, technical articles and open source projects.">
+  <meta name="author" content="Vortex">
+  <title data-i18n="site.title">Vortex - Terminal Mastery</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // tailwind config
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            amber: '#e09f3e', 'amber-dim': '#8a6228',
+            teal: '#3ec9a7', coral: '#e06c60', sage: '#8cb369', warm: '#d4915e',
+            'bg-deep': '#0b0d11', 'bg-card': 'rgba(14,17,24,0.92)',
+            fg: '#c8cdd5', 'fg-muted': '#5a6270',
+            'border-subtle': 'rgba(255,255,255,0.06)'
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            display: ['"Space Grotesk"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Layer 0: animated WebGL background (grid + cursor glow) -->
+  <canvas id="shaderBg"></canvas>
+  <!-- Layer 1: subtle "ember" particles that follow the cursor -->
+  <canvas id="emberCanvas"></canvas>
+
+  <!-- Layer 2: actual page content -->
+  <div id="content">
+
+    <!-- ===================== NAVIGATION ===================== -->
+    <nav class="fixed top-0 left-0 right-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+        <!-- Logo: mimics a terminal prompt -->
+        <a href="javascript:void(0)" onclick="navigate('home')" class="font-mono text-amber font-bold text-base tracking-tight flex items-center gap-1.5">
+          <span class="text-fg-muted">$</span>Vortex<span class="text-fg-muted/30">/</span>
+        </a>
+
+        <!-- Desktop navigation -->
+        <div class="hidden md:flex items-center gap-7 font-medium">
+          <a href="javascript:void(0)" class="nav-link active" data-page="home" data-i18n="nav.home" onclick="navigate('home')">Inicio</a>
+          <a href="javascript:void(0)" class="nav-link" data-page="commands" data-i18n="nav.commands" onclick="navigate('commands')">Comandos</a>
+          <a href="javascript:void(0)" class="nav-link" data-page="types" data-i18n="nav.types" onclick="navigate('types')">Tipos</a>
+          <a href="javascript:void(0)" class="nav-link" data-page="blog" data-i18n="nav.blog" onclick="navigate('blog')">Blog</a>
+          <a href="javascript:void(0)" class="nav-link" data-page="projects" data-i18n="nav.projects" onclick="navigate('projects')">Proyectos</a>
+          <a href="javascript:void(0)" class="nav-link" data-page="about" data-i18n="nav.about" onclick="navigate('about')">Acerca de</a>
+        </div>
+
+        <!-- Language switcher + mobile menu button -->
+        <div class="flex items-center gap-2">
+          <button class="lang-btn active px-2.5 py-1 rounded text-xs font-mono font-bold" id="btnEs" onclick="setLang('es')" aria-label="Español">ES</button>
+          <button class="lang-btn px-2.5 py-1 rounded text-xs font-mono font-bold" id="btnEn" onclick="setLang('en')" aria-label="English">EN</button>
+          <button class="md:hidden ml-2 text-fg-muted hover:text-amber transition" id="mobileMenuBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+
+      <!-- Mobile dropdown menu -->
+      <div class="md:hidden hidden bg-bg-deep/95 backdrop-blur-xl border-b border-border-subtle" id="mobileMenu">
+        <div class="flex flex-col px-6 py-4 gap-3 font-medium text-sm">
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('home');closeMobile()" data-i18n="nav.home">Inicio</a>
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('commands');closeMobile()" data-i18n="nav.commands">Comandos</a>
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('types');closeMobile()" data-i18n="nav.types">Tipos</a>
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('blog');closeMobile()" data-i18n="nav.blog">Blog</a>
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('projects');closeMobile()" data-i18n="nav.projects">Proyectos</a>
+          <a href="javascript:void(0)" class="nav-link py-1" onclick="navigate('about');closeMobile()" data-i18n="nav.about">Acerca de</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ===================== HOME ===================== -->
+    <div id="page-home" class="page active">
+      <section class="min-h-screen flex items-center justify-center px-4 pt-14">
+        <div class="max-w-4xl mx-auto text-center">
+          <p class="font-mono text-amber/50 text-xs tracking-[0.25em] uppercase mb-6" data-i18n="hero.pre">Guía interactiva de terminal</p>
+          <h1 class="font-display font-extrabold text-5xl sm:text-6xl md:text-8xl text-white leading-none mb-5 tracking-tight">Vortex</h1>
+          <p class="font-display text-fg-muted text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-10 leading-relaxed" data-i18n="hero.subtitle">Domina la terminal de Linux con tarjetas interactivas, ejemplos reales y una experiencia diseñada para quienes aman la línea de comandos.</p>
+
+          <!-- Decorative terminal with typing effect -->
+          <div class="hero-term max-w-lg mx-auto mb-12">
+            <div class="term-bar">
+              <div class="term-dot" style="background:#ff5f57"></div>
+              <div class="term-dot" style="background:#febc2e"></div>
+              <div class="term-dot" style="background:#28c840"></div>
+              <span class="ml-3 text-fg-muted/40 text-[11px] font-mono">bash - 62x4</span>
+            </div>
+            <div class="p-4 sm:p-5 text-left font-mono text-sm sm:text-[15px] min-h-[52px] flex items-center">
+              <span class="text-amber font-bold mr-1">$</span><span id="typingText" class="text-fg/90"></span><span class="cursor-blink"></span>
+            </div>
+          </div>
+
+          <!-- Quick stats -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-5 max-w-md mx-auto mb-12">
+            <div class="feature-card text-center px-2 py-4 sm:px-4 sm:py-5" onclick="navigate('commands')">
+              <div class="font-display font-bold text-2xl sm:text-3xl text-amber mb-1">87</div>
+              <div class="text-fg-muted text-[11px] sm:text-xs" data-i18n="home.stat1">Comandos</div>
+            </div>
+            <div class="feature-card text-center px-2 py-4 sm:px-4 sm:py-5" onclick="navigate('types')">
+              <div class="font-display font-bold text-2xl sm:text-3xl text-teal mb-1">5</div>
+              <div class="text-fg-muted text-[11px] sm:text-xs" data-i18n="home.stat2">Categorías</div>
+            </div>
+            <div class="feature-card text-center px-2 py-4 sm:px-4 sm:py-5" onclick="navigate('projects')">
+              <div class="font-display font-bold text-2xl sm:text-3xl text-warm mb-1">12</div>
+              <div class="text-fg-muted text-[11px] sm:text-xs" data-i18n="home.stat3">Proyectos</div>
+            </div>
+          </div>
+
+          <a href="javascript:void(0)" onclick="navigate('commands')" class="cta-btn inline-flex items-center gap-2 px-7 py-3 rounded-lg font-mono text-sm font-semibold" data-i18n="hero.cta">Explorar Comandos <i class="fas fa-arrow-right text-[10px] ml-1"></i></a>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== COMMANDS ===================== -->
+    <div id="page-commands" class="page">
+      <section class="pt-24 pb-20 px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="mb-10 reveal">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3" data-i18n="commands.title">Comandos Esenciales</h2>
+            <p class="text-fg-muted max-w-2xl text-sm sm:text-base mb-6" data-i18n="commands.subtitle">Filtra por categoría o busca cualquier comando. Pasa el cursor sobre las tarjetas para ver el detalle.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+              <!-- Search box -->
+              <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted/40 text-xs"></i>
+                <input type="text" id="cmdSearch" class="search-input" data-i18n-placeholder="commands.search" placeholder="Buscar comando...">
+              </div>
+              <!-- Filter pills are generated by JS -->
+              <div class="flex flex-wrap gap-2" id="filterPills"></div>
+            </div>
+            <div class="mt-3 text-xs font-mono text-fg-muted/50" id="cmdCount"></div>
+          </div>
+          <!-- Command cards grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="commandsGrid"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== TYPES ===================== -->
+    <div id="page-types" class="page">
+      <section class="pt-24 pb-20 px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-14 reveal">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3" data-i18n="types.title">Tipos de Comandos</h2>
+            <p class="text-fg-muted max-w-xl mx-auto text-sm sm:text-base" data-i18n="types.subtitle">Los comandos de Linux se organizan en categorías según su función principal. Haz clic en cualquier chip para filtrar comandos.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="typesGrid"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== BLOG ===================== -->
+    <div id="page-blog" class="page">
+      <section class="pt-24 pb-20 px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-14 reveal">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3" data-i18n="blog.title">Blog Técnico</h2>
+            <p class="text-fg-muted max-w-xl mx-auto text-sm sm:text-base" data-i18n="blog.subtitle">Artículos en profundidad sobre comandos, flujos de trabajo y el ecosistema Linux. Publicación mensual.</p>
+          </div>
+          <!-- blog cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="blogGrid"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== PROJECTS ===================== -->
+    <div id="page-projects" class="page">
+      <section class="pt-24 pb-20 px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-14 reveal">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3" data-i18n="projects.title">Proyectos que Usan la Terminal</h2>
+            <p class="text-fg-muted max-w-xl mx-auto text-sm sm:text-base" data-i18n="projects.subtitle">Proyectos reales que usan los comandos de Vortex internamente. Ejemplos vivos de cómo construir herramientas útiles con la línea de comandos.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== ABOUT ===================== -->
+    <div id="page-about" class="page">
+      <section class="pt-24 pb-20 px-4">
+        <div class="max-w-3xl mx-auto">
+          <div class="text-center mb-12 reveal">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3" data-i18n="about.title">Acerca de Vortex</h2>
+            <p class="text-fg-muted max-w-xl mx-auto text-sm sm:text-base" data-i18n="about.subtitle">Un proyecto educativo, abierto y construido con pasión por la línea de comandos.</p>
+          </div>
+
+          <article class="reveal max-w-2xl mx-auto space-y-5 text-fg/90 text-[15px] leading-relaxed">
+            <p data-i18n="about.p1">Vortex nació como un proyecto educativo universitario, creado por un estudiante apasionado por Linux y la línea de comandos. La premisa es simple: aprender la terminal no debería ser aburrido ni estar esparcido en decenas de tutoriales desconectados.</p>
+
+            <p data-i18n="about.p2">Aquí encontrarás una guía interactiva con comandos esenciales organizados por categorías reales de uso, artículos mensuales que profundizan en temas actuales del ecosistema Linux, y una selección de proyectos open source modernos que están reemplazando a las herramientas clásicas.</p>
+
+            <p data-i18n="about.p3">El código está disponible en GitHub, comentado y estructurado para que cualquiera pueda estudiarlo, modificarlo y aprender de él. Si te interesa la terminal, los sistemas operativos o el software libre, eres bienvenido a explorar.</p>
+
+            <!-- Project pillars cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+              <div class="feature-card text-center">
+                <i class="fas fa-graduation-cap text-2xl text-amber mb-3"></i>
+                <h3 class="font-display font-bold text-sm text-white mb-1" data-i18n="about.card1.title">Educativo</h3>
+                <p class="text-fg-muted text-xs" data-i18n="about.card1.desc">Cada comando y artículo busca enseñar el porqué, no solo el cómo.</p>
+              </div>
+              <div class="feature-card text-center">
+                <i class="fas fa-code-branch text-2xl text-teal mb-3"></i>
+                <h3 class="font-display font-bold text-sm text-white mb-1" data-i18n="about.card2.title">Open Source</h3>
+                <p class="text-fg-muted text-xs" data-i18n="about.card2.desc">Código abierto en GitHub, libre para estudiar y modificar.</p>
+              </div>
+              <div class="feature-card text-center">
+                <i class="fas fa-heart text-2xl text-coral mb-3"></i>
+                <h3 class="font-display font-bold text-sm text-white mb-1" data-i18n="about.card3.title">Hecho con pasión</h3>
+                <p class="text-fg-muted text-xs" data-i18n="about.card3.desc">Un proyecto personal de quien ama la terminal de Linux.</p>
+              </div>
+            </div>
+
+            <!-- repo link -->
+            <div class="text-center pt-6">
+              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="cta-btn inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-mono text-sm font-semibold">
+                <i class="fab fa-github"></i> <span data-i18n="about.repo">Ver en GitHub</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="border-t border-border-subtle py-10 px-4">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-sm text-fg-muted">
+        <div class="font-mono text-xs"><span class="text-amber">$</span> Vortex <span class="text-fg-muted/30">///</span> <span data-i18n="footer.tagline">Aprende. Ejecuta. Domina.</span></div>
+        <div class="flex items-center gap-5">
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="hover:text-amber transition" aria-label="GitHub"><i class="fab fa-github text-base"></i></a>
+        </div>
+        <div class="font-mono text-[11px] text-fg-muted/40" data-i18n="footer.copy">2026 Vortex. Proyecto Educativo.</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast for notifications (e.g. language change) -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Modal to read full blog articles -->
+  <div class="article-overlay" id="articleOverlay" onclick="closeArticle(event)">
+    <article class="article-modal" id="articleModal" onclick="event.stopPropagation()">
+      <button class="article-close" onclick="closeArticle()" aria-label="Cerrar">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="article-body" id="articleBody"></div>
+    </article>
+  </div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <!-- Order: i18n and data first, then logic, finally effects -->
+  <script src="js/i18n.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/blog.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/effects.js"></script>
+</body>
+</html>
