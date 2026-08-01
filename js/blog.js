@@ -589,7 +589,7 @@ sudo pacman -S ripgrep fd bat eza zoxide</code></pre>
 
 /* ===================== JULY 2026 ===================== */
 {
-    tag:'pipes', tagClass:'tag-pipes', date:'2026-07-15',
+    tag:'pipes', tagClass:'tag-pipes', date:'2026-07-31',
     es:{
       title:'La Filosofía Unix: Pipes, Redirección y el Arte de Componer Comandos',
       excerpt:'El operador | es la idea más poderosa de la terminal. Aprende cómo pipes, redirección y composición convierten comandos simples en herramientas complejas — con ejemplos reales que combinan grep, awk, sort, find y más.',
