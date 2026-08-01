@@ -182,6 +182,7 @@ nav {
 .tag-wayland    { background: rgba(212,145,94,0.1);  color: var(--warm); }
 .tag-containers { background: rgba(140,179,105,0.1); color: var(--sage); }
 .tag-rust       { background: rgba(224,159,62,0.1);  color: var(--accent); }
+.tag-pipes      { background: rgba(224,159,62,0.1);  color: var(--accent); }
 
 /* Project cards */
 .proj-card {
