@@ -69,8 +69,8 @@ function renderTypes() {
 function renderBlog() {
   document.getElementById('blogGrid').innerHTML = blogData.map((p, i) => {
     const d = p[lang];
-    // Date localized to the active language
-    const ds = new Date(p.date).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year:'numeric', month:'short', day:'numeric' });
+    // Date localized to the active language + same comment as on line 119
+    const ds = new Date(p.date + 'T00:00:00').toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year:'numeric', month:'short', day:'numeric' });
     return `<div class="blog-card reveal" style="transition-delay:${i*80}ms">
       <div class="p-5 flex flex-col flex-1 gap-2.5">
         <div class="flex items-center justify-between"><span class="blog-tag ${p.tagClass}">${p.tag}</span><span class="text-fg-muted/40 text-[11px] font-mono">${ds}</span></div>
@@ -116,7 +116,8 @@ function openArticle(index) {
   const p = blogData[index];
   if (!p) return;
   const d = p[lang];
-  const ds = new Date(p.date).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
+  // Parse the date as local time instead of UTC, so a YYYY-MM-DD string like '2026-07-31' doesn't render as the day before
+  const ds = new Date(p.date + 'T00:00:00').toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
   const body = document.getElementById('articleBody');
   body.innerHTML = `
     <div class="art-meta"><span class="blog-tag ${p.tagClass}">${p.tag}</span><span>${ds}</span></div>
