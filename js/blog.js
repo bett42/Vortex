@@ -585,5 +585,134 @@ sudo pacman -S ripgrep fd bat eza zoxide</code></pre>
 
 <p>If you want to see real projects that combine the classic commands to build useful tools, visit the <a href="#" onclick="navigate('projects');return false;">Projects</a> section of this site. The modern terminal exists, and it's partly written in Rust.</p>`
     }
+  },
+
+/* ===================== JULY 2026 ===================== */
+{
+    tag:'pipes', tagClass:'tag-pipes', date:'2026-07-15',
+    es:{
+      title:'La Filosofía Unix: Pipes, Redirección y el Arte de Componer Comandos',
+      excerpt:'El operador | es la idea más poderosa de la terminal. Aprende cómo pipes, redirección y composición convierten comandos simples en herramientas complejas — con ejemplos reales que combinan grep, awk, sort, find y más.',
+      content:`
+<p>Cada comando de Linux hace una sola cosa y la hace bien. <code>ls</code> lista. <code>grep</code> busca. <code>sort</code> ordena. La magia no está en ningún comando aislado, sino en cómo los <strong>conectas</strong>. El operador <code>|</code> —el pipe— toma la salida de un comando y la alimenta como entrada del siguiente. Es la idea más poderosa de la terminal.</p>
+
+<h2>Los operadores que conectan todo</h2>
+<div class="art-chart">
+  <div class="bar-row"><span class="bar-label">| pipe</span><div class="bar-track"><div class="bar-fill" style="width:98%;background:#e09f3e"></div></div><span class="bar-val">Conecta</span></div>
+  <div class="bar-row"><span class="bar-label">&gt; redirige</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#3ec9a7"></div></div><span class="bar-val">Guarda</span></div>
+  <div class="bar-row"><span class="bar-label">&gt;&gt; añade</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#d4915e"></div></div><span class="bar-val">Acumula</span></div>
+  <div class="bar-row"><span class="bar-label">&lt; inyecta</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#e06c60"></div></div><span class="bar-val">Lee</span></div>
+</div>
+
+<h2>Pipes: una cinta transportadora entre programas</h2>
+<p>Un pipe pasa la salida estándar (<code>stdout</code>) de un comando a la entrada estándar (<code>stdin</code>) del siguiente. Nadie imprime nada en pantalla; los datos fluyen de un proceso a otro.</p>
+
+<pre><code># Top 10 IPs que más fallan contraseñas en el log
+grep "Failed password" /var/log/auth.log | awk '{print $NF}' | sort | uniq -c | sort -rn | head</code></pre>
+
+<p>Esa línea hace cinco cosas: filtra, extrae el último campo, ordena, cuenta duplicados y muestra el top. Ningún programa por separado sabría hacer todo eso, pero seis comandos simples encadenados lo resuelven en una línea.</p>
+
+<h2>Redirección: guardar y leer archivos</h2>
+<ul>
+  <li><strong><code>&gt;</code></strong> — guarda la salida en un archivo (sobrescribe si existe).</li>
+  <li><strong><code>&gt;&gt;</code></strong> — añade al final del archivo sin borrar lo anterior.</li>
+  <li><strong><code>&lt;</code></strong> — alimenta un comando con el contenido de un archivo.</li>
+  <li><strong><code>2&gt;</code></strong> — redirige solo los errores (<code>stderr</code>).</li>
+</ul>
+
+<pre><code># Guarda el top 10 de procesos por memoria
+ps aux --sort=-%mem | head -10 &gt; top_mem.txt
+
+# Añade la fecha al final del log
+date &gt;&gt; registro.log
+
+# Cuenta líneas de un archivo sin abrirlo en pantalla
+wc -l &lt; /var/mail/usuario
+
+# Descarta los errores de un find ruidoso
+find / -name "*.conf" 2&gt; /dev/null</code></pre>
+
+<h2>El truco de /dev/null</h2>
+<p><code>/dev/null</code> es un agujero negro: lo que escribas en él desaparece. Redirigir ahí <code>stderr</code> silencia los errores; redirigir <code>stdout</code> descarta la salida normal. Esencial para scripts limpios que no escupen ruido por la terminal.</p>
+
+<h2>tee: ver y guardar a la vez</h2>
+<p><code>tee</code> divide la salida: la imprime en pantalla y la guarda en un archivo simultáneamente. Útil cuando quieres monitorear un proceso mientras lo registras.</p>
+
+<pre><code># Compila, redirige errores a la salida y guardas todo en log
+make build 2&gt;&amp;1 | tee errores.log</code></pre>
+
+<h2>Composición real: seis comandos, una respuesta</h2>
+<p>¿Qué archivos <code>.js</code> de tu proyecto tienen más comentarios "TODO" y cuántos? Una sola línea:</p>
+
+<pre><code>find . -name "*.js" -type f -exec grep -Hc "TODO" {} + | sort -t: -k2 -rn | head -20</code></pre>
+
+<p>Encadenaste <code>find</code>, <code>grep</code> y <code>sort</code> para responder una pregunta compleja. Esto es la <strong>filosofía Unix</strong>: herramientas pequeñas que componen.</p>
+
+<blockquote>"Escribe programas que hagan una sola cosa y la hagan bien. Escribe programas para trabajar juntos." — Doug McIlroy, inventor del pipe</blockquote>
+
+<p>Cada comando de la sección de <a href="#" onclick="navigate('commands');return false;">Comandos</a> está diseñado para conectarse con los demás. La terminal no es una colección de herramientas aisladas: es un lenguaje de composición. Aprender un comando nuevo no suma una habilidad — <strong>multiplica</strong> las que ya tienes.</p>`
+    },
+    en:{
+      title:'The Unix Philosophy: Pipes, Redirection, and the Art of Composing Commands',
+      excerpt:'The | operator is the most powerful idea in the terminal. Learn how pipes, redirection, and composition turn simple commands into complex tools — with real examples combining grep, awk, sort, find and more.',
+      content:`
+<p>Every Linux command does one thing and does it well. <code>ls</code> lists. <code>grep</code> searches. <code>sort</code> sorts. The magic isn't in any single command, but in how you <strong>connect</strong> them. The <code>|</code> operator —the pipe— takes one command's output and feeds it as the next command's input. It's the most powerful idea in the terminal.</p>
+
+<h2>The operators that connect everything</h2>
+<div class="art-chart">
+  <div class="bar-row"><span class="bar-label">| pipe</span><div class="bar-track"><div class="bar-fill" style="width:98%;background:#e09f3e"></div></div><span class="bar-val">Connect</span></div>
+  <div class="bar-row"><span class="bar-label">&gt; redirect</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#3ec9a7"></div></div><span class="bar-val">Save</span></div>
+  <div class="bar-row"><span class="bar-label">&gt;&gt; append</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#d4915e"></div></div><span class="bar-val">Accumulate</span></div>
+  <div class="bar-row"><span class="bar-label">&lt; inject</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#e06c60"></div></div><span class="bar-val">Read</span></div>
+</div>
+
+<h2>Pipes: a conveyor belt between programs</h2>
+<p>A pipe passes the standard output (<code>stdout</code>) of one command to the standard input (<code>stdin</code>) of the next. Nothing prints to the screen; data flows from one process to another.</p>
+
+<pre><code># Top 10 IPs with the most failed passwords in the log
+grep "Failed password" /var/log/auth.log | awk '{print $NF}' | sort | uniq -c | sort -rn | head</code></pre>
+
+<p>That line does five things: filters, extracts the last field, sorts, counts duplicates, and shows the top. No single program could do all of that, but six simple commands chained together solve it in one line.</p>
+
+<h2>Redirection: saving and reading files</h2>
+<ul>
+  <li><strong><code>&gt;</code></strong> — saves output to a file (overwrites if it exists).</li>
+  <li><strong><code>&gt;&gt;</code></strong> — appends to the end without deleting.</li>
+  <li><strong><code>&lt;</code></strong> — feeds a command the contents of a file.</li>
+  <li><strong><code>2&gt;</code></strong> — redirects only errors (<code>stderr</code>).</li>
+</ul>
+
+<pre><code># Save the top 10 processes by memory
+ps aux --sort=-%mem | head -10 &gt; top_mem.txt
+
+# Append the date to the log
+date &gt;&gt; build.log
+
+# Count lines of a file without printing it
+wc -l &lt; /var/mail/user
+
+# Discard errors from a noisy find
+find / -name "*.conf" 2&gt; /dev/null</code></pre>
+
+<h2>The /dev/null trick</h2>
+<p><code>/dev/null</code> is a black hole: anything you write to it disappears. Redirecting <code>stderr</code> there silences errors; redirecting <code>stdout</code> discards normal output. Essential for clean scripts that don't spit noise into the terminal.</p>
+
+<h2>tee: see it and save it at once</h2>
+<p><code>tee</code> splits the output: it prints to the screen and saves to a file simultaneously. Useful when you want to monitor a process while logging it.</p>
+
+<pre><code># Build, redirect errors to output, save everything to a log
+make build 2&gt;&amp;1 | tee errors.log</code></pre>
+
+<h2>Real composition: six commands, one answer</h2>
+<p>Which <code>.js</code> files in your project have the most "TODO" comments and how many? One line:</p>
+
+<pre><code>find . -name "*.js" -type f -exec grep -Hc "TODO" {} + | sort -t: -k2 -rn | head -20</code></pre>
+
+<p>You chained <code>find</code>, <code>grep</code> and <code>sort</code> to answer a complex question. This is the <strong>Unix philosophy</strong>: small tools that compose.</p>
+
+<blockquote>"Write programs that do one thing and do it well. Write programs to work together." — Doug McIlroy, inventor of the pipe</blockquote>
+
+<p>Every command in the <a href="#" onclick="navigate('commands');return false;">Commands</a> section is designed to connect with the others. The terminal isn't a collection of isolated tools: it's a composition language. Learning a new command doesn't add one skill — it <strong>multiplies</strong> the ones you already have.</p>`
+    }
   }
 ];
