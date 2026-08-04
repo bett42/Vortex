@@ -54,7 +54,7 @@ Cada archivo tiene una responsabilidad única (SRP):
 | Archivo | Responsabilidad |
 |---------|-----------------|
 | `index.html` | Markup semántico, configuración de Tailwind y orden de carga de scripts |
-| `css/styles.css` | Todos los estilos personalizados, agrupados en 12 secciones numeradas |
+| `css/styles.css` | Todos los estilos personalizados, agrupados en secciones  |
 | `js/i18n.js` | El diccionario `i18n`, la función `t()` y `setLang()` |
 | `js/data.js` | Datos puros: `commandsData`, `typesData`, `projectsData` |
 | `js/blog.js` | El array `blogData` con título, resumen y cuerpo HTML bilingüe |
@@ -139,7 +139,7 @@ Every file has a clear single responsibility (SRP):
 | File | Responsibility |
 |------|----------------|
 | `index.html` | Semantic markup, Tailwind config and script loading order |
-| `css/styles.css` | All custom styles, grouped into 12 numbered sections |
+| `css/styles.css` | All custom styles, grouped into sections |
 | `js/i18n.js` | The `i18n` dictionary, the `t()` helper and `setLang()` |
 | `js/data.js` | Pure data: `commandsData`, `typesData`, `projectsData` |
 | `js/blog.js` | The `blogData` array with bilingual title, excerpt and HTML body |
