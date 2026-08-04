@@ -139,7 +139,7 @@ Every file has a clear single responsibility (SRP):
 | File | Responsibility |
 |------|----------------|
 | `index.html` | Semantic markup, Tailwind config and script loading order |
-| `css/styles.css` | All custom styles, grouped into sections |
+| `css/styles.css` | All custom styles are grouped into sections |
 | `js/i18n.js` | The `i18n` dictionary, the `t()` helper and `setLang()` |
 | `js/data.js` | Pure data: `commandsData`, `typesData`, `projectsData` |
 | `js/blog.js` | The `blogData` array with bilingual title, excerpt and HTML body |
