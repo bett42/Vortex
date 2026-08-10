@@ -27,7 +27,7 @@
 - **Artículos mensuales** (Enero 2026-Presente) con enlaces a encuestas, investigaciones, datos y gráficos de barras en CSS. Los artículos completos se abren en un modal.
 - **12 proyectos open source** que usan los comandos de Vortex internamente, con enlaces a GitHub y chips clicables que indican qué comando usa cada uno.
 - **Bilingüe** Español / Inglés.
-- **Fondo animado** con shader WebGL + partículas sutiles.
+- **Fondo animado** con shader WebGL.
 - **Accesible**: respeta `prefers-reduced-motion` y usa HTML semántico.
 - **Sin dependencias de build**: se sirve tal cual.
 
@@ -45,7 +45,7 @@ Vortex/
 │   ├── data.js         # 87 comandos, 5 categorías y 12 proyectos
 │   ├── blog.js         # Entradas del blog con artículos completos
 │   ├── app.js          # Navegación SPA, render, filtros y modal de artículos
-│   └── effects.js      # Fondo WebGL, partículas y efecto de escritura
+│   └── effects.js      # Fondo WebGL y efecto de escritura
 └── README.md           # Este archivo
 ```
 
@@ -112,7 +112,7 @@ Cada archivo tiene una responsabilidad única (SRP):
 - **Monthly blog articles** (Jan 2026-Present) with links to surveys, research, data and CSS bar charts. Full articles open in a modal.
 - **12 open source projects** that use Vortex's commands internally, with GitHub links and clickable chips showing which command each one uses.
 - **Bilingual** Spanish / English.
-- **Animated background** with a WebGL shader + subtle particles.
+- **Animated background** with a WebGL shader.
 - **Accessible**: respects `prefers-reduced-motion` and uses semantic HTML.
 - **No build dependencies**: served as-is.
 
@@ -130,7 +130,7 @@ Vortex/
 │   ├── data.js         # 87 commands, 5 categories and 12 projects
 │   ├── blog.js         # Blog entries with full article bodies
 │   ├── app.js          # SPA navigation, rendering, filters and article modal
-│   └── effects.js      # WebGL background, particles and typing effect
+│   └── effects.js      # WebGL background and typing effect
 └── README.md           # This file
 ```
 
