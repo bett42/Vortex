@@ -714,5 +714,201 @@ make build 2&gt;&amp;1 | tee errors.log</code></pre>
 
 <p>Every command in the <a href="#" onclick="navigate('commands');return false;">Commands</a> section is designed to connect with the others. The terminal isn't a collection of isolated tools: it's a composition language. Learning a new command doesn't add one skill — it <strong>multiplies</strong> the ones you already have.</p>`
     }
+  },
+  /* ===================== AUGUST 2026 ===================== */
+  {
+    tag:'dotfiles', tagClass:'tag-dotfiles', date:'2026-08-31',
+    es:{
+      title:'Dotfiles: Tu Terminal como Código',
+      excerpt:'Tu .bashrc, .vimrc y .gitconfig definen cómo se comporta tu terminal. Aprende a versionarlos con Git, gestionarlos con stow o chezmoi, y convertir tu configuración en algo portátil y reproducible.',
+      content:`
+<p>Tu terminal no es solo un programa: es <strong>tu</strong> terminal. Los alias que usas, el prompt que ves, los colores de tu editor, las teclas que Vim ejecuta... todo eso vive en archivos ocultos en tu directorio home. Se llaman <em>dotfiles</em> porque empiezan con un punto: <code>.bashrc</code>, <code>.vimrc</code>, <code>.gitconfig</code>.</p>
+
+<h2>El problema de la configuración desperdigada</h2>
+<p>Imagínate migrando a una máquina nueva. Sin tus dotfiles, pierdes cada alias que memorizaste, cada atajo de teclado, cada tema que calibraste a mano durante meses. Y si no los versionas, no hay forma de saber qué cambiaste ni cuándo. La solución es tratar tu configuración como código: versionada, portátil y reproducible.</p>
+
+<h2>Qué incluyen los dotfiles típicos</h2>
+<div class="art-chart">
+  <div class="bar-row"><span class="bar-label">.bashrc / .zshrc</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#e09f3e"></div></div><span class="bar-val">95%</span></div>
+  <div class="bar-row"><span class="bar-label">.vimrc / nvim</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#3ec9a7"></div></div><span class="bar-val">90%</span></div>
+  <div class="bar-row"><span class="bar-label">.gitconfig</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#e06c60"></div></div><span class="bar-val">85%</span></div>
+  <div class="bar-row"><span class="bar-label">.ssh/config</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#d4915e"></div></div><span class="bar-val">70%</span></div>
+  <div class="bar-row"><span class="bar-label">.tmux.conf</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#8cb369"></div></div><span class="bar-val">65%</span></div>
+  <div class="bar-row"><span class="bar-label">bin/ scripts</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:#e09f3e"></div></div><span class="bar-val">50%</span></div>
+</div>
+
+<h2>Enfoque 1: Git bare repo (el clásico minimalista)</h2>
+<p>Un truco elegante que no requiere instalar nada. Usas un repo Git "desnudo" (bare) en un directorio escondido, y apuntas tu home como árbol de trabajo. Solo versionas los archivos que eliges explícitamente.</p>
+
+<pre><code># Creas el repo bare en ~/.cfg
+git init --bare ~/.cfg
+
+# Alias para gestionarlo sin teclear tanto
+alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
+# Añades solo lo que quieres versionar
+config add .bashrc .vimrc .gitconfig
+config commit -m "init dotfiles"
+config push -u origin main</code></pre>
+
+<p>El truco es que <code>config status</code> solo te muestra lo que añades explícitamente, no los miles de archivos de tu home. Es lo más ligero que existe: una dependencia (Git) y cero herramientas extra.</p>
+
+<h2>Enfoque 2: GNU Stow (la granja de symlinks)</h2>
+<p><a href="https://www.gnu.org/software/stow/" target="_blank" rel="noopener">GNU Stow</a> es un gestor de symlinks con casi 30 años de historia. Guardas tus dotfiles en un directorio (<code>~/dotfiles</code>) organizados por "paquetes", y Stow crea los symlinks al home por ti.</p>
+
+<pre><code>~/dotfiles/
+├── bash/
+│   └── .bashrc
+├── vim/
+│   └── .vimrc
+└── git/
+    └── .gitconfig
+
+# Desde ~/dotfiles, instalas cada paquete
+stow bash vim git</code></pre>
+
+<p>Stow crea <code>~/.bashrc</code>, <code>~/.vimrc</code> y <code>~/.gitconfig</code> como symlinks a los archivos versionados. Eliminar un paquete es <code>stow -D vim</code> y el symlink desaparece sin tocar el archivo real. Limpio y reversible.</p>
+
+<h2>Enfoque 3: chezmoi (el moderno)</h2>
+<p><a href="https://github.com/twpayne/chezmoi" target="_blank" rel="noopener">chezmoi</a> es la herramienta más completa hoy. Usa plantillas (templates) para gestionar diferencias entre máquinas: tu portátil y tu servidor no necesitan el mismo <code>.gitconfig</code>, y chezmoi lo sabe.</p>
+
+<pre><code># Instalación
+sudo apt install chezmoi   # o: sh -c "$(curl -fsLS get.chezmoi.io)"
+
+# Empiezas a gestionar un archivo
+chezmoi add ~/.bashrc
+
+# Editas la versión gestionada (no la real)
+chezmoi edit ~/.bashrc
+
+# Aplicas los cambios al home
+chezmoi apply
+
+# Clonas tu config en una máquina nueva con una línea
+chezmoi init --apply tu-usuario</code></pre>
+
+<p>chezmoi soporta plantillas, secretos cifrados con <a href="https://age-encryption.org/" target="_blank" rel="noopener">age</a> o <code>gpg</code>, y hooks para ejecutar scripts tras aplicar. Es la opción más potente si tienes varias máquinas o configuras servidores.</p>
+
+<h2>Otras herramientas a considerar</h2>
+<ul>
+  <li><strong><a href="https://github.com/yadm-dev/yadm" target="_blank" rel="noopener">yadm</a></strong> — como el Git bare pero con plantillas y cifrado integrados.</li>
+  <li><strong><a href="https://github.com/anishathalye/dotbot" target="_blank" rel="noopener">dotbot</a></strong> — un solo script de Python que crea symlinks según un YAML.</li>
+  <li><strong><a href="https://github.com/webpro/awesome-dotfiles" target="_blank" rel="noopener">awesome-dotfiles</a></strong> — lista curada de repos de dotfiles de miles de usuarios para inspirarte.</li>
+</ul>
+
+<h2>Qué NO debes commitear jamás</h2>
+<blockquote>Si contiene un token, una llave privada o una contraseña, no pertenece a tu repo público. Sin excepciones.</blockquote>
+
+<ul>
+  <li><strong><code>~/.ssh/id_*</code></strong> — llaves privadas SSH. Si las subes por error, rótalas ya.</li>
+  <li><strong><code>~/.netrc</code></strong> — credenciales HTTP para curl/git.</li>
+  <li><strong><code>~/.aws/credentials</code></strong> — claves de AWS.</li>
+  <li><strong><code>~/.gnupg/</code></strong> — tus llaves GPG privadas.</li>
+  <li>Cualquier archivo con <code>TOKEN=</code>, <code>API_KEY=</code> o <code>PASSWORD=</code>.</li>
+</ul>
+
+<p>Si necesitas incluir datos sensibles, usa el soporte de secretos de chezmoi o <a href="https://github.com/AGWA/git-crypt" target="_blank" rel="noopener">git-crypt</a> para cifrar archivos concretos del repo.</p>
+
+<h2>Flujo recomendado para empezar</h2>
+<p>Si nunca has gestionado tus dotfiles, empieza con el enfoque bare de Git. Es una línea de configuración y un alias. Cuando te pique el bicho de tener tu terminal perfectamente reproducible, migra a chezmoi. La curva es suave y el beneficio es enorme: una máquina nueva se configura en un comando.</p>
+
+<p>Cada comando de la sección de <a href="#" onclick="navigate('commands');return false;">Comandos</a> se puede envolver en un alias dentro de tu <code>.bashrc</code>. Cuando versionas ese archivo, estás versionando tu forma de trabajar con la terminal. Y eso, en el fondo, es versionar tu productividad.</p>`
+    },
+    en:{
+      title:'Dotfiles: Your Terminal as Code',
+      excerpt:'Your .bashrc, .vimrc and .gitconfig define how your terminal behaves. Learn to version them with Git, manage them with stow or chezmoi, and turn your config into something portable and reproducible.',
+      content:`
+<p>Your terminal isn't just a program: it's <strong>your</strong> terminal. The aliases you use, the prompt you see, your editor's colors, the keys Vim runs... all of that lives in hidden files in your home directory. They're called <em>dotfiles</em> because they start with a dot: <code>.bashrc</code>, <code>.vimrc</code>, <code>.gitconfig</code>.</p>
+
+<h2>The problem with scattered config</h2>
+<p>Imagine migrating to a new machine. Without your dotfiles, you lose every alias you memorized, every keyboard shortcut, every theme you calibrated by hand over months. And if you don't version them, there's no way to know what you changed or when. The solution is to treat your config as code: versioned, portable, and reproducible.</p>
+
+<h2>What typical dotfiles include</h2>
+<div class="art-chart">
+  <div class="bar-row"><span class="bar-label">.bashrc / .zshrc</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:#e09f3e"></div></div><span class="bar-val">95%</span></div>
+  <div class="bar-row"><span class="bar-label">.vimrc / nvim</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:#3ec9a7"></div></div><span class="bar-val">90%</span></div>
+  <div class="bar-row"><span class="bar-label">.gitconfig</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#e06c60"></div></div><span class="bar-val">85%</span></div>
+  <div class="bar-row"><span class="bar-label">.ssh/config</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#d4915e"></div></div><span class="bar-val">70%</span></div>
+  <div class="bar-row"><span class="bar-label">.tmux.conf</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:#8cb369"></div></div><span class="bar-val">65%</span></div>
+  <div class="bar-row"><span class="bar-label">bin/ scripts</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:#e09f3e"></div></div><span class="bar-val">50%</span></div>
+</div>
+
+<h2>Approach 1: Git bare repo (the minimalist classic)</h2>
+<p>An elegant trick that requires installing nothing. You use a "bare" Git repo in a hidden directory, and point your home as the working tree. You only version the files you explicitly choose.</p>
+
+<pre><code># Create the bare repo at ~/.cfg
+git init --bare ~/.cfg
+
+# Alias to manage it without typing too much
+alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
+# Add only what you want to version
+config add .bashrc .vimrc .gitconfig
+config commit -m "init dotfiles"
+config push -u origin main</code></pre>
+
+<p>The trick is that <code>config status</code> only shows what you explicitly add, not the thousands of files in your home. It's the lightest option that exists: one dependency (Git) and zero extra tools.</p>
+
+<h2>Approach 2: GNU Stow (the symlink farm)</h2>
+<p><a href="https://www.gnu.org/software/stow/" target="_blank" rel="noopener">GNU Stow</a> is a symlink manager with almost 30 years of history. You keep your dotfiles in a directory (<code>~/dotfiles</code>) organized by "packages", and Stow creates the symlinks to your home for you.</p>
+
+<pre><code>~/dotfiles/
+├── bash/
+│   └── .bashrc
+├── vim/
+│   └── .vimrc
+└── git/
+    └── .gitconfig
+
+# From ~/dotfiles, install each package
+stow bash vim git</code></pre>
+
+<p>Stow creates <code>~/.bashrc</code>, <code>~/.vimrc</code> and <code>~/.gitconfig</code> as symlinks to the versioned files. Removing a package is <code>stow -D vim</code> and the symlink disappears without touching the real file. Clean and reversible.</p>
+
+<h2>Approach 3: chezmoi (the modern one)</h2>
+<p><a href="https://github.com/twpayne/chezmoi" target="_blank" rel="noopener">chezmoi</a> is the most complete tool today. It uses templates to manage differences between machines: your laptop and your server don't need the same <code>.gitconfig</code>, and chezmoi knows it.</p>
+
+<pre><code># Install
+sudo apt install chezmoi   # or: sh -c "$(curl -fsLS get.chezmoi.io)"
+
+# Start managing a file
+chezmoi add ~/.bashrc
+
+# Edit the managed version (not the real one)
+chezmoi edit ~/.bashrc
+
+# Apply changes to your home
+chezmoi apply
+
+# Clone your config on a new machine with one line
+chezmoi init --apply your-user</code></pre>
+
+<p>chezmoi supports templates, encrypted secrets with <a href="https://age-encryption.org/" target="_blank" rel="noopener">age</a> or <code>gpg</code>, and hooks to run scripts after applying. It's the most powerful option if you have several machines or configure servers.</p>
+
+<h2>Other tools to consider</h2>
+<ul>
+  <li><strong><a href="https://github.com/yadm-dev/yadm" target="_blank" rel="noopener">yadm</a></strong> — like the Git bare approach but with templates and encryption built in.</li>
+  <li><strong><a href="https://github.com/anishathalye/dotbot" target="_blank" rel="noopener">dotbot</a></strong> — a single Python script that creates symlinks based on a YAML file.</li>
+  <li><strong><a href="https://github.com/webpro/awesome-dotfiles" target="_blank" rel="noopener">awesome-dotfiles</a></strong> — curated list of thousands of users' dotfiles repos for inspiration.</li>
+</ul>
+
+<h2>What you must NEVER commit</h2>
+<blockquote>If it contains a token, a private key, or a password, it doesn't belong in your public repo. No exceptions.</blockquote>
+
+<ul>
+  <li><strong><code>~/.ssh/id_*</code></strong> — private SSH keys. If you upload them by mistake, rotate them now.</li>
+  <li><strong><code>~/.netrc</code></strong> — HTTP credentials for curl/git.</li>
+  <li><strong><code>~/.aws/credentials</code></strong> — AWS keys.</li>
+  <li><strong><code>~/.gnupg/</code></strong> — your private GPG keys.</li>
+  <li>Any file with <code>TOKEN=</code>, <code>API_KEY=</code>, or <code>PASSWORD=</code>.</li>
+</ul>
+
+<p>If you need to include sensitive data, use chezmoi's secret support or <a href="https://github.com/AGWA/git-crypt" target="_blank" rel="noopener">git-crypt</a> to encrypt specific files in the repo.</p>
+
+<h2>Recommended flow to start</h2>
+<p>If you've never managed your dotfiles, start with the Git bare approach. It's one config line and one alias. When you get the bug of having your perfectly reproducible terminal, migrate to chezmoi. The learning curve is gentle and the payoff is huge: a new machine is configured with a single command.</p>
+
+<p>Every command in the <a href="#" onclick="navigate('commands');return false;">Commands</a> section can be wrapped in an alias inside your <code>.bashrc</code>. When you version that file, you're versioning your way of working with the terminal. And that, in the end, is versioning your productivity.</p>`
+    }
   }
 ];
